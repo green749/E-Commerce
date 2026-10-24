@@ -9,7 +9,13 @@ import { eventRepository } from '../repositories/event.repository.js';
 import { paymentService } from './payment.service.js';
 import { withTransaction } from '../db/index.js';
 import { env } from '../config/env.js';
-import { BadRequestError, NotFoundError, ConflictError, ForbiddenError } from '../utils/errors.js';
+import {
+  BadRequestError,
+  NotFoundError,
+  ConflictError,
+  ForbiddenError,
+  ValidationError,
+} from '../utils/errors.js';
 
 export const FREE_SHIPPING_THRESHOLD = 99900; // ₹999
 export const STANDARD_SHIPPING_FEE = 9900; // ₹99
@@ -667,9 +673,48 @@ export const orderService = {
    * @returns {Promise<Object>}
    */
   async updateOrderStatusByAdmin({ orderId, status, adminUserId, note = null }) {
-    const order = await orderRepository.findById(orderId);
+    let order = null;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
+    if (isUuid) {
+      order = await orderRepository.findById(orderId);
+    } else {
+      order = await orderRepository.findByOrderNumber(orderId);
+    }
+
     if (!order) {
       throw new NotFoundError('Order not found');
+    }
+
+    // Refuse to move a held order to shipped until it is released
+    if (status === 'shipped' && (order.is_held || order.status === 'hold')) {
+      throw new BadRequestError(
+        'Cannot move a held order to shipped until it is released',
+        'ORDER_HELD'
+      );
+    }
+
+    // Handle admin placing order on hold
+    if (status === 'hold') {
+      if (
+        order.payment_status !== 'paid' ||
+        ['shipped', 'delivered', 'cancelled', 'returned'].includes(order.status)
+      ) {
+        throw new ValidationError(
+          'Hold is only allowed for orders that are paid and not yet shipped, delivered, or cancelled'
+        );
+      }
+      return await orderRepository.holdOrder(order.id, {
+        reason: note || 'Placed on hold by admin',
+        changed_by: adminUserId,
+      });
+    }
+
+    // If order is currently on hold, block any state transitions until released
+    if (order.is_held || order.status === 'hold') {
+      throw new BadRequestError(
+        'Order is currently on hold and cannot transition status until it is released',
+        'ORDER_HELD'
+      );
     }
 
     const validTransitions = {

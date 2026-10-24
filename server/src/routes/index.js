@@ -12,6 +12,7 @@ import checkoutRoutes from './checkout.routes.js';
 import paymentRoutes from './payment.routes.js';
 import orderRoutes from './order.routes.js';
 import eventRoutes from './event.routes.js';
+import internalRoutes from './internal.routes.js';
 
 const router = Router();
 
@@ -53,5 +54,8 @@ router.use('/admin', adminRoutes);
 
 // Analytics Events: /api/events
 router.use('/events', eventRoutes);
+
+// Internal Integration API: /api/internal
+router.use('/internal', internalRoutes);
 
 export default router;

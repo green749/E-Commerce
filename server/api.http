@@ -1,6 +1,7 @@
 ### E-Commerce API Client (REST Client / Thunder Client)
 ### Base URL
 @baseUrl = http://localhost:5000/api
+@internalKey = c28a52e604ec40952827c7f60568228c2506a0b6c808d3398292e92a00dcdddc
 
 ### --------------------------------------------------------------------------
 ### SYSTEM & HEALTH CHECK
@@ -488,5 +489,61 @@ Content-Type: application/json
 GET {{baseUrl}}/admin/inventory/low-stock?page=1&limit=50
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### INTERNAL API (/api/internal)
+### Protected by X-Internal-Key header only
+### --------------------------------------------------------------------------
+
+### 55. Internal: Pause Product
+POST {{baseUrl}}/internal/products/REPLACE_WITH_PRODUCT_ID_OR_SLUG/pause
+X-Internal-Key: {{internalKey}}
+Content-Type: application/json
+
+{
+  "request_id": "req-pause-001"
+}
+
+### 56. Internal: Resume Product
+POST {{baseUrl}}/internal/products/REPLACE_WITH_PRODUCT_ID_OR_SLUG/resume
+X-Internal-Key: {{internalKey}}
+Content-Type: application/json
+
+{
+  "request_id": "req-resume-001"
+}
+
+### 57. Internal: Hold Order (by Public Order Number)
+POST {{baseUrl}}/internal/orders/ORD-TEST-1001/hold
+X-Internal-Key: {{internalKey}}
+Content-Type: application/json
+
+{
+  "request_id": "req-hold-001",
+  "reason": "Suspected payment anomaly verification"
+}
+
+### 58. Internal: Release Order (by Public Order Number)
+POST {{baseUrl}}/internal/orders/ORD-TEST-1001/release
+X-Internal-Key: {{internalKey}}
+Content-Type: application/json
+
+{
+  "request_id": "req-release-001"
+}
+
+### 59. Internal: Create Purchase Request (Supplier Reorder)
+POST {{baseUrl}}/internal/purchase-requests
+X-Internal-Key: {{internalKey}}
+Content-Type: application/json
+
+{
+  "request_id": "req-purch-001",
+  "sku": "TSHIRT-BLK-M",
+  "quantity": 100,
+  "supplier": "Apex Textiles Ltd",
+  "requested_by": "warehouse-manager"
+}
+
 
 

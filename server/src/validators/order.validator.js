@@ -28,8 +28,8 @@ export const requestReturnSchema = z.object({
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(['packed', 'shipped', 'delivered'], {
-    errorMap: () => ({ message: 'Status must be one of: packed, shipped, delivered' }),
+  status: z.enum(['packed', 'shipped', 'delivered', 'hold'], {
+    errorMap: () => ({ message: 'Status must be one of: packed, shipped, delivered, hold' }),
   }),
   note: z.string().trim().max(500).optional().nullable(),
 });

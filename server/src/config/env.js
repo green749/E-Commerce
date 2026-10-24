@@ -34,6 +34,7 @@ const envSchema = z.object({
     .preprocess((val) => val === 'true' || val === true, z.boolean())
     .default(false),
   RETENTION_DAYS: z.coerce.number().default(90),
+  INTERNAL_API_KEY: z.string().default('random_characters'),
 });
 
 const parsed = envSchema.safeParse(process.env);

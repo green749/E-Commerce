@@ -627,12 +627,14 @@ export async function runSeed() {
         phone: '+91 9876543210',
       };
 
-      await query(
+      let effectiveOrderId = orderId;
+      const orderInsertRes = await query(
         `INSERT INTO orders (
           id, order_number, user_id, address_snapshot, subtotal, discount,
           shipping_fee, tax, total, status, payment_status, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
-        ON CONFLICT (order_number) DO NOTHING;`,
+        ON CONFLICT (order_number) DO UPDATE SET updated_at = EXCLUDED.updated_at
+        RETURNING id;`,
         [
           orderId,
           orderNumber,
@@ -648,6 +650,9 @@ export async function runSeed() {
           orderDate,
         ]
       );
+      if (orderInsertRes.rows && orderInsertRes.rows.length > 0) {
+        effectiveOrderId = orderInsertRes.rows[0].id;
+      }
 
       // Order items
       const item1Id = crypto.randomUUID();
@@ -656,7 +661,7 @@ export async function runSeed() {
           id, order_id, variant_id, product_name_snapshot, sku, unit_price, quantity, line_total, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (id) DO NOTHING;`,
-        [item1Id, orderId, v1.id, v1.product_name, v1.sku, item1Price, 1, item1Price, orderDate]
+        [item1Id, effectiveOrderId, v1.id, v1.product_name, v1.sku, item1Price, 1, item1Price, orderDate]
       );
 
       await query(
@@ -664,7 +669,7 @@ export async function runSeed() {
           id, order_id, variant_id, product_name_snapshot, sku, unit_price, quantity, line_total, created_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (id) DO NOTHING;`,
-        [crypto.randomUUID(), orderId, v2.id, v2.product_name, v2.sku, item2Price, 1, item2Price, orderDate]
+        [crypto.randomUUID(), effectiveOrderId, v2.id, v2.product_name, v2.sku, item2Price, 1, item2Price, orderDate]
       );
 
       // Payments
@@ -674,7 +679,7 @@ export async function runSeed() {
             id, order_id, gateway, gateway_payment_id, amount, status, created_at
           ) VALUES ($1, $2, 'razorpay', $3, $4, 'captured', $5)
           ON CONFLICT (gateway_payment_id) DO NOTHING;`,
-          [crypto.randomUUID(), orderId, `pay_test_${10000 + i}`, total, orderDate]
+          [crypto.randomUUID(), effectiveOrderId, `pay_test_${10000 + i}`, total, orderDate]
         );
       }
 

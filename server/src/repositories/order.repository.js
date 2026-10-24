@@ -180,6 +180,91 @@ export const orderRepository = {
   },
 
   /**
+   * Put an order on hold
+   * @param {string} orderId
+   * @param {Object} options
+   * @param {string} [options.reason]
+   * @param {string|null} [options.changed_by]
+   * @param {Function} [client]
+   * @returns {Promise<Object>}
+   */
+  async holdOrder(orderId, { reason = 'Placed on hold', changed_by = null } = {}, client = query) {
+    const current = await this.findById(orderId, client);
+    if (!current) return null;
+
+    const sql = `
+      UPDATE orders
+      SET is_held = true,
+          held_at = CURRENT_TIMESTAMP,
+          hold_reason = $1,
+          previous_status = COALESCE(previous_status, status),
+          status = 'hold',
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2
+      RETURNING *;
+    `;
+    const res = await client(sql, [reason, orderId]);
+    const updated = res.rows[0];
+
+    await this.addStatusHistory(
+      {
+        order_id: orderId,
+        from_status: current.status,
+        to_status: 'hold',
+        changed_by,
+        note: reason,
+      },
+      client
+    );
+
+    return updated;
+  },
+
+  /**
+   * Release an order from hold
+   * @param {string} orderId
+   * @param {Object} options
+   * @param {string} [options.note]
+   * @param {string|null} [options.changed_by]
+   * @param {Function} [client]
+   * @returns {Promise<Object>}
+   */
+  async releaseOrder(orderId, { note = 'Released from hold', changed_by = null } = {}, client = query) {
+    const current = await this.findById(orderId, client);
+    if (!current) return null;
+
+    const targetStatus = current.previous_status && current.previous_status !== 'hold'
+      ? current.previous_status
+      : 'placed';
+
+    const sql = `
+      UPDATE orders
+      SET is_held = false,
+          held_at = NULL,
+          hold_reason = NULL,
+          status = $1,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2
+      RETURNING *;
+    `;
+    const res = await client(sql, [targetStatus, orderId]);
+    const updated = res.rows[0];
+
+    await this.addStatusHistory(
+      {
+        order_id: orderId,
+        from_status: current.status,
+        to_status: targetStatus,
+        changed_by,
+        note,
+      },
+      client
+    );
+
+    return updated;
+  },
+
+  /**
    * Get single order with complete line items, address, payments, and timeline
    * @param {string} identifier - order_number or order ID (UUID)
    * @param {string|null} [userId=null] - for customer access verification
