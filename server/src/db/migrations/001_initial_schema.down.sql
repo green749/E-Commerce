@@ -1,0 +1,22 @@
+-- Rollback: 001_initial_schema.down.sql
+-- Description: Cleanly drops all tables and triggers in reverse dependency order
+
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS returns CASCADE;
+DROP TABLE IF EXISTS payments CASCADE;
+DROP TABLE IF EXISTS order_status_history CASCADE;
+DROP TABLE IF EXISTS order_items CASCADE;
+DROP TABLE IF EXISTS inventory_reservations CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS coupons CASCADE;
+DROP TABLE IF EXISTS wishlist_items CASCADE;
+DROP TABLE IF EXISTS cart_items CASCADE;
+DROP TABLE IF EXISTS carts CASCADE;
+DROP TABLE IF EXISTS inventory CASCADE;
+DROP TABLE IF EXISTS variants CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS addresses CASCADE;
+DROP TABLE IF EXISTS refresh_tokens CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;

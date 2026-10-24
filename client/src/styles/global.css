@@ -1,0 +1,406 @@
+@import './tokens.css';
+
+/* ==========================================================================
+   BASE RESETS & DEFAULTS
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  background-color: var(--paper);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   RESPONSIVE EDITORIAL TYPOGRAPHY
+   ========================================================================== */
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+h1,
+.h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  font-weight: var(--fw-heavy);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+h2,
+.h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+h3,
+.h3 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+h4,
+.h4 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-h4);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+p,
+.body-text {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+  color: var(--ink);
+}
+
+.text-small {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  color: var(--muted);
+}
+
+.text-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   EDITORIAL CONTAINER & OPEN LAYOUT SYSTEM (RULE: NO CARDS FOR LAYOUT)
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-24);
+  padding-right: var(--space-24);
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: var(--space-16);
+    padding-right: var(--space-16);
+  }
+}
+
+.section {
+  padding-top: var(--space-64);
+  padding-bottom: var(--space-64);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: var(--space-48);
+    padding-bottom: var(--space-48);
+  }
+}
+
+.section-cream {
+  background-color: var(--cream);
+}
+
+.section-soft {
+  background-color: var(--soft);
+}
+
+.section-dark {
+  background-color: var(--ink);
+  color: #ffffff;
+}
+
+.section-dark .hero-title,
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4,
+.section-dark p {
+  color: #ffffff;
+}
+
+/* Hairline Dividers */
+.divider {
+  height: 1px;
+  background-color: var(--border);
+  border: none;
+  margin: var(--space-32) 0;
+  width: 100%;
+}
+
+.divider-subtle {
+  height: 1px;
+  background-color: var(--border-subtle);
+  border: none;
+  margin: var(--space-16) 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================== */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Accessible keyboard navigation focus states */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   ADMIN OPERATIONAL PANEL STYLES
+   ========================================================================== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.admin-main {
+  flex: 1;
+  background-color: #ffffff;
+  min-height: 100vh;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-16) var(--space-32);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-content {
+  padding: var(--space-32);
+  flex: 1;
+  background-color: #ffffff;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.admin-table-container {
+  background-color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-table-row {
+  transition: background-color var(--transition-fast);
+}
+
+.admin-table-row:hover {
+  background-color: rgba(79, 70, 229, 0.04) !important;
+}
+
+@media (max-width: 900px) {
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+    z-index: 100 !important;
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-mobile-close {
+    display: block !important;
+  }
+
+  .admin-mobile-backdrop {
+    display: block;
+  }
+
+  .admin-header {
+    padding: var(--space-12) var(--space-16);
+  }
+
+  .admin-content {
+    padding: var(--space-16);
+  }
+}
+
+/* Pure Origin Responsive Helpers */
+@media (max-width: 992px) {
+  .category-arch-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .starter-kit-band {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+  }
+
+  .starter-kit-band>div {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .category-arch-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .split-auth-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-gradient-panel {
+    display: none !important;
+  }
+}
+
+/* Optima Executive Dashboard Grid Responsive Layout */
+@media (max-width: 1080px) {
+  .optima-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}

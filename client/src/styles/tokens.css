@@ -1,0 +1,144 @@
+/* ==========================================================================
+   DESIGN TOKENS - PURE ORIGIN BOTANICAL SKINCARE
+   Clean botanical luxury palette: Deep Forest Green, Warm Terracotta, Sunlit Linen
+   ========================================================================== */
+
+:root {
+  /* Core Botanical Color Palette */
+  --ink: #18241b; /* Deep earthy forest-charcoal */
+  --ink-light: #253329; /* Deep sage-charcoal */
+  --paper: #fcfaf7; /* Warm natural linen paper */
+  --paper-subtle: #f5f0ea; /* Sunlit natural stone */
+  --paper-sand: #eae3d8; /* Warm sand / values bar */
+  --cream: #f9f6f0; /* Gentle organic cream */
+  --soft: #f1ede5; /* Soft earth fill */
+  --terracotta: #b4532a; /* Warm rich terracotta / clay accent */
+  --terracotta-hover: #9c441f; /* Deeper terracotta */
+  --terracotta-light: #fbeee8; /* Pale terracotta tint */
+  --forest: #1e382b; /* Deep botanical forest green */
+  --forest-dark: #162a20; /* Deepest pine */
+  --forest-hover: #294c3a; /* Lighter forest hover */
+  --forest-light: #eaf2ed; /* Pale sage green tint */
+  --olive: #5b735c; /* Herbal olive */
+  --sage: #889e8a; /* Soft herbal sage */
+  --slate: #4f5b51; /* Muted forest slate */
+  --mist: #e2dbce; /* Light hairline stone */
+
+  /* Functional & Accent Colors */
+  --primary: #1e382b; /* Pure Origin Signature Forest Green */
+  --primary-hover: #294c3a; /* Forest hover */
+  --primary-light: #eaf2ed; /* Sage/forest tint badge */
+  --primary-subtle: #f2f7f3; /* Very soft forest wash */
+  --accent: #b4532a; /* Terracotta secondary CTA */
+  --accent-hover: #9c441f; /* Terracotta hover */
+  --pink: #b4532a; /* Terracotta for badges & highlights */
+  --pink-light: #fbeee8; /* Light warm terracotta tint */
+  --pink-hover: #9c441f;
+  --sun: #d4a359; /* Warm gold star ratings */
+  --sun-light: #fdf6e9; /* Soft gold fill */
+
+  /* Feedback Colors */
+  --success: #2e7d4d; /* Botanical verified green */
+  --success-light: #eaf7ef;
+  --warning: #d97706; /* Warm amber */
+  --warning-light: #fef3c7;
+  --danger: #b91c1c; /* Crimson / error */
+  --danger-light: #fef2f2;
+
+  /* Neutral Shades & Borders */
+  --muted: #667367; /* Soft earthy secondary text */
+  --muted-light: #9aa39b; /* Subtle tertiary text */
+  --border: #ded8cb; /* Warm stone hairline dividers */
+  --border-subtle: #ebe6dc; /* Very light stone divider */
+  --border-strong: #c8c0b1; /* Elevated borders */
+
+  /* Typography Families */
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: var(--font-serif);
+  --font-body: var(--font-sans);
+
+  /* Font Weights */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-heavy: 800;
+
+  /* Type Scale: Desktop */
+  --fs-hero: 52px;
+  --lh-hero: 60px;
+  --fs-h1: 38px;
+  --lh-h1: 46px;
+  --fs-h2: 28px;
+  --lh-h2: 36px;
+  --fs-h3: 22px;
+  --lh-h3: 28px;
+  --fs-h4: 18px;
+  --lh-h4: 24px;
+  --fs-body: 16px;
+  --lh-body: 26px;
+  --fs-small: 14px;
+  --lh-small: 20px;
+  --fs-caption: 12px;
+  --lh-caption: 16px;
+
+  /* Spacing Scale (Exact 4/8/16/24/32/48/64 specification) */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  /* Legacy aliases for flexible alignment */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 80px;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+  --radius-btn: 12px;
+  --radius-input: 10px;
+
+  /* Shadows (Kept very subtle to maintain editorial lightness) */
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 15, 26, 0.05), 0 1px 2px -1px rgba(15, 15, 26, 0.03);
+  --shadow-md: 0 4px 12px -2px rgba(15, 15, 26, 0.06), 0 2px 4px -2px rgba(15, 15, 26, 0.03);
+  --shadow-dropdown: 0 10px 25px -3px rgba(15, 15, 26, 0.08), 0 4px 6px -4px rgba(15, 15, 26, 0.04);
+  --shadow-modal: 0 20px 40px -10px rgba(15, 15, 26, 0.12), 0 8px 16px -6px rgba(15, 15, 26, 0.06);
+  --shadow-focus-ring: 0 0 0 3px rgba(108, 43, 255, 0.25);
+  --shadow-focus-ring-danger: 0 0 0 3px rgba(239, 68, 68, 0.25);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive Typography Overrides (Mobile screens < 768px) */
+@media (max-width: 768px) {
+  :root {
+    --fs-hero: 34px;
+    --lh-hero: 42px;
+    --fs-h1: 28px;
+    --lh-h1: 34px;
+    --fs-h2: 22px;
+    --lh-h2: 28px;
+    --fs-h3: 18px;
+    --lh-h3: 24px;
+    --fs-h4: 16px;
+    --lh-h4: 22px;
+  }
+}

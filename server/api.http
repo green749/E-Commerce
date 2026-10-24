@@ -1,0 +1,492 @@
+### E-Commerce API Client (REST Client / Thunder Client)
+### Base URL
+@baseUrl = http://localhost:5000/api
+
+### --------------------------------------------------------------------------
+### SYSTEM & HEALTH CHECK
+### --------------------------------------------------------------------------
+
+### 1. Health Check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### AUTHENTICATION (/api/auth)
+### --------------------------------------------------------------------------
+
+### 2. Register New Customer
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Sarah Connor",
+  "email": "sarah.connor@example.com",
+  "password": "Password@123",
+  "phone": "+91 9876543210"
+}
+
+### Store token from register response
+@registeredToken = {{register.response.body.data.accessToken}}
+
+### 3. Register Validation Error (Weak Password)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "weak@example.com",
+  "password": "weak"
+}
+
+### 4. Login Customer (Success)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alex@example.com",
+  "password": "User@123"
+}
+
+### Store token from login response
+@authToken = {{login.response.body.data.accessToken}}
+
+### 5. Login Admin
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@shoppe.com",
+  "password": "Admin@123"
+}
+
+@adminToken = {{adminLogin.response.body.data.accessToken}}
+
+### 6. Login Failed (Invalid Credentials - returns generic error)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alex@example.com",
+  "password": "WrongPassword@123"
+}
+
+### 7. Refresh Access Token (Uses httpOnly cookie or fallback body)
+# @name refreshToken
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{}
+
+### 8. Forgot Password (Generates time-limited token logged to server console)
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "alex@example.com"
+}
+
+### 9. Reset Password (Use the token logged to console from step 8)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "REPLACE_WITH_TOKEN_FROM_CONSOLE",
+  "password": "NewSecretPassword@123"
+}
+
+### 10. Logout (Clears refresh cookie & revokes token in DB)
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{}
+
+### --------------------------------------------------------------------------
+### PROFILE & USER (/api/me)
+### --------------------------------------------------------------------------
+
+### 11. Get Current User Profile (Requires Bearer token)
+GET {{baseUrl}}/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 12. Update Current User Profile
+PATCH {{baseUrl}}/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Alexander Vance",
+  "phone": "+91 9999888877"
+}
+
+### --------------------------------------------------------------------------
+### ADDRESSES CRUD (/api/me/addresses)
+### --------------------------------------------------------------------------
+
+### 13. List User Addresses
+GET {{baseUrl}}/me/addresses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 14. Create New Address
+# @name createAddress
+POST {{baseUrl}}/me/addresses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "full_name": "Alex Vance",
+  "phone": "+91 9123456780",
+  "line1": "Tower 5, Penthouse 12B",
+  "line2": "Lavelle Road",
+  "city": "Bengaluru",
+  "state": "Karnataka",
+  "pincode": "560001",
+  "is_default": true
+}
+
+@createdAddressId = {{createAddress.response.body.data.id}}
+
+### 15. Get Address by ID
+GET {{baseUrl}}/me/addresses/{{createdAddressId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 16. Update Address
+PATCH {{baseUrl}}/me/addresses/{{createdAddressId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "line2": "Opposite UB City",
+  "is_default": true
+}
+
+### 17. Delete Address
+DELETE {{baseUrl}}/me/addresses/{{createdAddressId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### PUBLIC CATALOG (/api/categories, /api/products, /api/search)
+### --------------------------------------------------------------------------
+
+### 18. Get Category Tree (Cached 5 minutes)
+GET {{baseUrl}}/categories
+Content-Type: application/json
+
+### 19. Browse Products (Default Pagination: page 1, limit 12, newest)
+GET {{baseUrl}}/products?page=1&limit=12&sort=newest
+Content-Type: application/json
+
+### 20. Browse Products with Filters (Category, Price Range, In-Stock, On-Sale)
+GET {{baseUrl}}/products?category=audio-acoustics&min_price=1000000&max_price=3000000&in_stock=true&on_sale=true
+Content-Type: application/json
+
+### 21. Browse Products with Variant Filters (Size, Color, Brand)
+GET {{baseUrl}}/products?brand=Aura%20Acoustics&color=Matte%20Black
+Content-Type: application/json
+
+### 22. Search Products via PostgreSQL Full-Text Search (tsvector + GIN)
+GET {{baseUrl}}/products?q=planar%20headphones&sort=popularity
+Content-Type: application/json
+
+### 23. Get Product Details by Slug (Includes variants, stock availability & 4 related items)
+GET {{baseUrl}}/products/aura-pro-planar-magnetic-headphones
+Content-Type: application/json
+
+### 24. Quick Search Suggestions (Up to 6 results)
+GET {{baseUrl}}/search/suggestions?q=head
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### ADMIN OPERATIONS (/api/admin) - Requires Admin Token
+### --------------------------------------------------------------------------
+
+### 25. Admin: Create Category
+# @name adminCreateCategory
+POST {{baseUrl}}/admin/categories
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Smart Home & IoT",
+  "slug": "smart-home-iot",
+  "image_url": "https://picsum.photos/seed/smart-home/800/800"
+}
+
+@adminCategoryId = {{adminCreateCategory.response.body.data.id}}
+
+### 26. Admin: Create Product
+# @name adminCreateProduct
+POST {{baseUrl}}/admin/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "category_id": "{{adminCategoryId}}",
+  "name": "Aura Smart Ambient Light Bar",
+  "slug": "aura-smart-ambient-light-bar",
+  "brand": "Aura Acoustics",
+  "description": "RGBW smart desk ambient bar with music sync, custom macros, and matte aluminum finish.",
+  "base_price": 499900,
+  "mrp": 599900,
+  "image_urls": ["https://picsum.photos/seed/lightbar/800/800"],
+  "is_active": true
+}
+
+@adminProductId = {{adminCreateProduct.response.body.data.id}}
+
+### 27. Admin: Create Product Variant (Also initializes inventory)
+# @name adminCreateVariant
+POST {{baseUrl}}/admin/variants
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "product_id": "{{adminProductId}}",
+  "sku": "AURA-AMB-BAR-BLK",
+  "size": "50cm",
+  "color": "Matte Black",
+  "price": 499900,
+  "mrp": 599900,
+  "quantity_on_hand": 50
+}
+
+@adminVariantId = {{adminCreateVariant.response.body.data.id}}
+
+### 28. Admin: Adjust Stock Level with Reason
+PATCH {{baseUrl}}/admin/inventory/{{adminVariantId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "adjustment": 25,
+  "reason": "Restocked batch #B-2026-10"
+}
+
+### 29. Admin: Soft Delete Product (No longer exposed publicly)
+DELETE {{baseUrl}}/admin/products/{{adminProductId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### SHOPPING CART (/api/cart) - Guest & Logged-in
+### --------------------------------------------------------------------------
+
+### 30. Get Cart (Guest or Authenticated)
+# @name getCart
+GET {{baseUrl}}/cart
+Content-Type: application/json
+
+### 31. Add Item to Cart
+# @name addToCart
+POST {{baseUrl}}/cart/items
+Content-Type: application/json
+
+{
+  "variant_id": "REPLACE_WITH_VARIANT_UUID",
+  "quantity": 2
+}
+
+@cartItemId = {{addToCart.response.body.data.items[0].id}}
+
+### 32. Update Cart Item Quantity (1 - 10)
+PATCH {{baseUrl}}/cart/items/{{cartItemId}}
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### 33. Apply Coupon to Cart (WELCOME10 / FESTIVE20 / FLAT500)
+POST {{baseUrl}}/cart/coupon
+Content-Type: application/json
+
+{
+  "code": "WELCOME10"
+}
+
+### 34. Remove Coupon from Cart
+DELETE {{baseUrl}}/cart/coupon
+Content-Type: application/json
+
+### 35. Remove Single Item from Cart
+DELETE {{baseUrl}}/cart/items/{{cartItemId}}
+Content-Type: application/json
+
+### 36. Clear Entire Cart
+DELETE {{baseUrl}}/cart
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### WISHLIST (/api/wishlist) - Authenticated Customer
+### --------------------------------------------------------------------------
+
+### 37. Get Wishlist
+GET {{baseUrl}}/wishlist
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 38. Add Product to Wishlist
+POST {{baseUrl}}/wishlist
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "product_id": "REPLACE_WITH_PRODUCT_UUID"
+}
+
+### 39. Remove Product from Wishlist
+DELETE {{baseUrl}}/wishlist/REPLACE_WITH_PRODUCT_UUID
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### --------------------------------------------------------------------------
+### CHECKOUT & PAYMENTS (/api/checkout, /api/payments)
+### --------------------------------------------------------------------------
+
+### 40. Start Checkout (Creates Order, Locks Stock, Reserves 15 Min, Razorpay Order)
+# @name startCheckout
+POST {{baseUrl}}/checkout/start
+Authorization: Bearer {{authToken}}
+Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+Content-Type: application/json
+
+{
+  "address_id": "REPLACE_WITH_USER_ADDRESS_UUID",
+  "shipping_option": "standard"
+}
+
+@checkoutOrderNumber = {{startCheckout.response.body.data.order.order_number}}
+@razorpayOrderId = {{startCheckout.response.body.data.razorpay.order_id}}
+
+### 41. Verify Razorpay Payment (Marks order placed, commits reservation)
+POST {{baseUrl}}/payments/verify
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "order_number": "{{checkoutOrderNumber}}",
+  "razorpay_order_id": "{{razorpayOrderId}}",
+  "razorpay_payment_id": "pay_test_123456789",
+  "razorpay_signature": "REPLACE_WITH_GENERATED_HMAC_SHA256"
+}
+
+### 42. Razorpay Webhook (payment.captured / payment.failed)
+POST {{baseUrl}}/payments/webhook
+x-razorpay-signature: REPLACE_WITH_WEBHOOK_HMAC_SHA256
+Content-Type: application/json
+
+{
+  "event": "payment.captured",
+  "payload": {
+    "payment": {
+      "entity": {
+        "id": "pay_webhook_99999",
+        "order_id": "{{razorpayOrderId}}",
+        "amount": 499900,
+        "currency": "INR",
+        "status": "captured"
+      }
+    }
+  }
+}
+
+### --------------------------------------------------------------------------
+### CUSTOMER ORDERS (/api/orders)
+### --------------------------------------------------------------------------
+
+### 43. List Customer Orders
+GET {{baseUrl}}/orders?page=1&limit=10
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 44. Get Single Order with Timeline & Items
+GET {{baseUrl}}/orders/{{checkoutOrderNumber}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+### 45. Cancel Customer Order (Before shipping)
+POST {{baseUrl}}/orders/{{checkoutOrderNumber}}/cancel
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "reason": "Changed my mind before dispatch"
+}
+
+### 46. Request Return for Delivered Order (Within 7 days)
+POST {{baseUrl}}/orders/{{checkoutOrderNumber}}/return
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "order_item_id": "REPLACE_WITH_ORDER_ITEM_UUID",
+  "reason": "Size did not fit well, requesting return"
+}
+
+### --------------------------------------------------------------------------
+### ADMIN ORDER & RETURN MANAGEMENT (/api/admin)
+### --------------------------------------------------------------------------
+
+### 47. Admin: List All Orders with Filters
+GET {{baseUrl}}/admin/orders?status=placed&page=1&limit=20
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### 48. Admin: Update Order Status (placed -> packed -> shipped -> delivered)
+PATCH {{baseUrl}}/admin/orders/REPLACE_WITH_ORDER_UUID/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "packed",
+  "note": "Package inspected and dispatched to packing bay"
+}
+
+### 49. Admin: List Return Requests
+GET {{baseUrl}}/admin/returns?page=1&limit=20
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### 50. Admin: Handle Return Action (approve / reject / refund)
+PATCH {{baseUrl}}/admin/returns/REPLACE_WITH_RETURN_UUID
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "action": "refund",
+  "reason": "Item inspected at warehouse and refund processed"
+}
+
+### --------------------------------------------------------------------------
+### OPERATIONAL ADMIN DASHBOARD (/api/admin)
+### --------------------------------------------------------------------------
+
+### 51. Admin: Operational Summary
+### Returns today's orders, today's revenue (paise), pending orders, low-stock count, pending returns
+GET {{baseUrl}}/admin/summary
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### 52. Admin: List Customers with Search and Pagination
+GET {{baseUrl}}/admin/customers?search=alex&page=1&limit=20
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### 53. Admin: Get Customer Details with Addresses & Order History
+GET {{baseUrl}}/admin/customers/REPLACE_WITH_CUSTOMER_UUID
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+### 54. Admin: Get Low-Stock Inventory
+### Lists variants where quantity_on_hand - quantity_reserved <= reorder_level
+GET {{baseUrl}}/admin/inventory/low-stock?page=1&limit=50
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+
