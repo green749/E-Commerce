@@ -4,10 +4,15 @@ import { successResponse } from '../utils/response.js';
 import { env } from '../config/env.js';
 
 const SESSION_COOKIE_NAME = 'session_id';
+const isCrossSite =
+  env.NODE_ENV === 'production' ||
+  Boolean(process.env.RENDER) ||
+  process.env.COOKIE_CROSS_SITE === 'true';
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isCrossSite || env.NODE_ENV === 'production',
+  sameSite: isCrossSite ? 'none' : 'lax',
   path: '/',
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };

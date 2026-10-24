@@ -5,10 +5,15 @@ import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
 
 const COOKIE_NAME = 'refreshToken';
+const isCrossSite =
+  env.NODE_ENV === 'production' ||
+  Boolean(process.env.RENDER) ||
+  process.env.COOKIE_CROSS_SITE === 'true';
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isCrossSite || env.NODE_ENV === 'production',
+  sameSite: isCrossSite ? 'none' : 'lax',
   path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
