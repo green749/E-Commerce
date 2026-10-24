@@ -99,11 +99,12 @@ app.get('/', (req, res) => {
   });
 });
 
-// Rate limiting on all /api routes
+// Rate limiting on all API routes
 app.use('/api', globalLimiter);
 
-// API Routes
+// API Routes: mount on both /api (canonical) and / (fallback for clients omitting /api prefix)
 app.use('/api', apiRoutes);
+app.use('/', apiRoutes);
 
 // 404 Route Not Found
 app.use((req, res, next) => {

@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://e-commerce-ur8e.onrender.com/api';
+let rawBaseUrl = import.meta.env.VITE_API_URL || 'https://e-commerce-ur8e.onrender.com/api';
+rawBaseUrl = rawBaseUrl.replace(/\/$/, '');
+if (!rawBaseUrl.endsWith('/api')) {
+  rawBaseUrl += '/api';
+}
+const API_BASE_URL = rawBaseUrl;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

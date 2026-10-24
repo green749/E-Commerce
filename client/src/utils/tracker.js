@@ -6,7 +6,12 @@
 
 const FLUSH_INTERVAL_MS = 4000;
 const MAX_BATCH_SIZE = 10;
-const ENDPOINT = '/api/events';
+let rawBase = import.meta.env.VITE_API_URL || 'https://e-commerce-ur8e.onrender.com/api';
+rawBase = rawBase.replace(/\/$/, '');
+if (!rawBase.endsWith('/api')) {
+  rawBase += '/api';
+}
+const ENDPOINT = `${rawBase}/events`;
 
 function getSessionId() {
   try {
